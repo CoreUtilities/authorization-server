@@ -1,4 +1,4 @@
-package com.authorization_server.authorization_server;
+package com.authorization_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

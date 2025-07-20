@@ -2,8 +2,12 @@ package com.authorization_service.controller;
 
 import com.authorization_service.dto.LoginRequest;
 import com.authorization_service.dto.RegisterRequest;
+import com.authorization_service.service.JwtService;
 import com.authorization_service.entity.User;
 import com.authorization_service.repository.UserRepository;
+
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +18,12 @@ public class AuthController {
 
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthController(UserRepository userRepo, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -39,7 +45,10 @@ public class AuthController {
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
-        return ResponseEntity.ok("Login success (JWT pending)");
+
+        String token = jwtService.generateToken(user.getUsername());
+        return ResponseEntity.ok(Map.of("token", token));
     }
+
 }
 
